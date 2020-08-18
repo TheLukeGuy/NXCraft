@@ -1,0 +1,8 @@
+# Build files
+build/
+*.elf
+*.nacp
+*.nro
+
+# macOS junk
+.DS_Store
