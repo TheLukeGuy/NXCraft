@@ -39,9 +39,9 @@ include $(DEVKITPRO)/libnx/switch_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	src src/protocol src/protocol/client src/protocol/server
+SOURCES		:=	$(shell tree -dif --noreport src)
 DATA		:=	data
-INCLUDES	:=	include libs/json/single_include
+INCLUDES	:=	$(shell tree -dif --noreport include) libs/json/single_include libs/stb libs/glm
 ROMFS		:=	romfs
 
 APP_TITLE	:=	NXCraft
@@ -63,7 +63,7 @@ CXXFLAGS	:= $(CFLAGS) -fno-rtti -std=c++17
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:= -lnx
+LIBS	:= -lglad -lglfw3 -lEGL -lglapi -ldrm_nouveau -lnx -lm
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing

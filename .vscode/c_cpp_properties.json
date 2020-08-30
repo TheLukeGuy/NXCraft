@@ -5,7 +5,12 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${default}",
-                "${workspaceFolder}/libs/json/single_include"
+                "/opt/devkitpro/devkitARM/include",
+                "/opt/devkitpro/libnx/include",
+                "/opt/devkitpro/portlibs/switch/include",
+                "${workspaceFolder}/libs/json/single_include",
+                "${workspaceFolder}/libs/stb",
+                "${workspaceFolder}/libs/glm"
             ],
             "defines": [],
             "macFrameworkPath": [
