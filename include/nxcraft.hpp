@@ -6,6 +6,8 @@
 #include "nxcraft/global.hpp"
 #include "nxcraft/platforms.hpp"
 
+#include "nxcraft/game/resource_packs.hpp"
+
 #include "nxcraft/graphics/graphics.hpp"
 
 #include "nxcraft/platforms/platform.hpp"

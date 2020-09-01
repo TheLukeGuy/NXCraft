@@ -1,5 +1,4 @@
 #include <iostream>
-#include <switch.h>
 
 #include "nxcraft.hpp"
 
@@ -23,6 +22,8 @@ int main() {
     std::cout << "[*] Minecraft Version: " << Constants::MINECRAFT_VERSION << "\n";
     std::cout << "[*] Asset Version: " << Constants::ASSET_VERSION << "\n";
     std::cout << "[*] Protocol Version: " << Constants::PROTOCOL_VERSION << "\n";
+
+    game::ResourcePacks::loadResourcePack(Global::platform->getResourcePath() + "pack");
 
     std::pair<int, int> defaultWindowSize = Global::platform->getDefaultWindowSize();
     if (!graphics::Graphics::initGraphics(defaultWindowSize.first, defaultWindowSize.second)) {

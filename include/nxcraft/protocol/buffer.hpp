@@ -4,7 +4,7 @@
 #include <string>
 #include <sstream>
 
-#include <nlohmann/json.hpp>
+#include "nlohmann/json.hpp"
 
 #include "rich_text.hpp"
 
