@@ -5,15 +5,24 @@
 #include <sstream>
 #include <vector>
 
+#define NANOVG_GL3_IMPLEMENTATION
+#include "nanovg_gl.h"
+
 #include "../global.hpp"
 
 namespace nxcraft {
-namespace graphics {
 
 GLFWwindow *Graphics::window = nullptr;
+NVGcontext *Graphics::vg = nullptr;
+
+int Graphics::windowX = 0;
+int Graphics::windowY = 0;
+int Graphics::bufferX = 0;
+int Graphics::bufferY = 0;
+
 std::map<std::string, unsigned int> Graphics::shaderCache = {};
 
-bool Graphics::initGraphics(int width, int height) {
+bool Graphics::init(int width, int height) {
     std::cout << "[*] Loading GLFW...\n";
     if (!glfwInit()) {
         std::cout << "[!] Failed to load GLFW.\n";
@@ -52,7 +61,40 @@ bool Graphics::initGraphics(int width, int height) {
     glfwSetFramebufferSizeCallback(window, setFramebufferSize);
     setFramebufferSize(window, width, height);
 
+    std::cout << "[*] Loading NanoVG...\n";
+    vg = nvgCreateGL3(NVG_STENCIL_STROKES);
+    if (!vg) {
+        std::cout << "[!] Failed to load NanoVG.\n";
+        glfwTerminate();
+        return false;
+    }
+
     return true;
+}
+
+void Graphics::deinit() {
+    nvgDeleteGL3(vg);
+    glfwTerminate();
+}
+
+bool Graphics::keepRunning() {
+    return !glfwWindowShouldClose(window);
+}
+
+void Graphics::beginFrame() {
+    glfwGetWindowSize(window, &windowX, &windowY);
+    glfwGetFramebufferSize(window, &bufferX, &bufferY);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+    nvgBeginFrame(vg, windowX, windowY, bufferX / windowX);
+}
+
+void Graphics::endFrame() {
+    nvgEndFrame(vg);
+
+    glfwSwapBuffers(window);
+    glfwPollEvents();
 }
 
 unsigned int Graphics::getShader(std::string name) {
@@ -103,5 +145,4 @@ unsigned int Graphics::getShader(std::string name) {
     return program;
 }
 
-} // namespace graphics
 } // namespace nxcraft

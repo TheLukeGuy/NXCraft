@@ -9,8 +9,7 @@
                 "/opt/devkitpro/libnx/include",
                 "/opt/devkitpro/portlibs/switch/include",
                 "${workspaceFolder}/libs/json/single_include",
-                "${workspaceFolder}/libs/stb",
-                "${workspaceFolder}/libs/glm"
+                "${workspaceFolder}/libs/nanovg/src"
             ],
             "defines": [],
             "macFrameworkPath": [

@@ -26,21 +26,46 @@ int main() {
     game::ResourcePacks::loadResourcePack(Global::platform->getResourcePath() + "pack");
 
     std::pair<int, int> defaultWindowSize = Global::platform->getDefaultWindowSize();
-    if (!graphics::Graphics::initGraphics(defaultWindowSize.first, defaultWindowSize.second)) {
+    if (!Graphics::init(defaultWindowSize.first, defaultWindowSize.second)) {
         std::cout << "[!] Failed to initialize graphics. Exiting...\n";
         
         Global::platform->deinit();
         return EXIT_FAILURE;
     }
 
-    while (!glfwWindowShouldClose(graphics::Graphics::window)) {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    ComponentLoader::loadComponent(new game::LoadingScreen);
 
-        glfwSwapBuffers(graphics::Graphics::window);
-        glfwPollEvents();
+    double previousTime = glfwGetTime();
+    int frameCount = 0;
+    while (Graphics::keepRunning()) {
+        double currentTime = glfwGetTime();
+        if (currentTime - previousTime >= 1) {
+            Global::fps = frameCount;
+
+            previousTime = currentTime;
+            frameCount = 0;
+        }
+
+        ++frameCount;
+        Graphics::beginFrame();
+
+        for (Component *component : ComponentLoader::components) {
+            component->onUpdate();
+        }
+
+        Graphics::endFrame();
     }
 
-    glfwTerminate();
+    std::cout << "[*] Exiting NXCraft, cleaning up...\n";
+
+    for (Component *component : ComponentLoader::components) {
+        ComponentLoader::unloadComponent(component);
+    }
+
+    Graphics::deinit();
+
+    std::cout << "[*] Goodbye!\n";
     Global::platform->deinit();
+    
     return EXIT_SUCCESS;
 }

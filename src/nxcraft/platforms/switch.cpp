@@ -1,5 +1,7 @@
 #include "switch.hpp"
 
+#if defined (__SWITCH__)
+
 #include <switch.h>
 
 namespace nxcraft {
@@ -30,3 +32,5 @@ void Switch::deinit() {
 
 } // namespace platforms
 } // namespace nxcraft
+
+#endif // defined __SWITCH__

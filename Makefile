@@ -39,10 +39,10 @@ include $(DEVKITPRO)/libnx/switch_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	$(shell tree -dif --noreport src)
+SOURCES		:=	$(shell tree -dif --noreport src) libs/nanovg/src
 DATA		:=	data
-INCLUDES	:=	$(shell tree -dif --noreport include) libs/json/single_include libs/stb libs/glm
-ROMFS		:=	romfs
+INCLUDES	:=	$(shell tree -dif --noreport include) libs/json/single_include libs/nanovg/src
+ROMFS		:=	resources
 
 APP_TITLE	:=	NXCraft
 APP_AUTHOR	:=	Luke

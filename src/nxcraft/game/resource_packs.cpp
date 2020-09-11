@@ -4,11 +4,17 @@
 #include <sstream>
 
 #include "nlohmann/json.hpp"
-#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include "nanovg.h"
+
+#include "../graphics.hpp"
 
 namespace nxcraft {
 namespace game {
+
+std::map<std::string, ResourcePacks::PackMeta> ResourcePacks::resourcePacks = {};
+
+std::map<std::string, ResourcePacks::TextureCache> ResourcePacks::textureCache = {};
 
 ResourcePacks::PackMeta ResourcePacks::getPackMeta(std::string path) {
     std::ifstream stream(path + "/pack.mcmeta");
@@ -30,7 +36,15 @@ ResourcePacks::PackMeta ResourcePacks::getPackMeta(std::string path) {
     };
 }
 
+void ResourcePacks::clearCaches() {
+    for (std::pair<std::string, TextureCache> cache : textureCache) {
+        stbi_image_free(cache.second.texture);
+    }
+    textureCache.clear();
+}
+
 void ResourcePacks::loadResourcePack(std::string path) {
+    clearCaches();
     PackMeta meta = getPackMeta(path);
     loadResourcePack(path, meta);
 }
@@ -46,23 +60,49 @@ std::filesystem::path ResourcePacks::getFilePath(std::string name) {
             return path;
         }
     }
+    return "";
 }
 
 std::byte * ResourcePacks::getTexture(std::string name) {
-    std::filesystem::path path = getFilePath(name);
-    return getImage(path);
+    int width, height, nrChannels;
+    return getTexture(name, &width, &height, &nrChannels);
+}
+
+std::byte * ResourcePacks::getTexture(std::string name, int *width, int *height) {
+    int nrChannels;
+    return getTexture(name, width, height, &nrChannels);
+}
+
+std::byte * ResourcePacks::getTexture(std::string name, int *width, int *height, int *nrChannels) {
+    if (textureCache.count(name)) {
+        TextureCache cache = textureCache[name];
+        *width = cache.width;
+        *height = cache.height;
+        *nrChannels = cache.nrChannels;
+        return cache.texture;
+    }
+
+    std::filesystem::path path = getFilePath("assets/minecraft/textures/" + name);
+    std::byte *image = getImage(path, width, height, nrChannels);
+
+    textureCache[name] = {image, *width, *height, *nrChannels};
+    return image;
 }
 
 std::byte * ResourcePacks::getImage(std::string path) {
     int width, height;
-    getImage(path, &width, &height);
+    return getImage(path, &width, &height);
 }
 
 std::byte * ResourcePacks::getImage(std::string path, int *width, int *height) {
-    stbi_set_flip_vertically_on_load(true);
-
     int nrChannels;
-    return (std::byte *) stbi_load(path.c_str(), width, height, &nrChannels, 0);
+    return getImage(path, width, height, &nrChannels);
+}
+
+std::byte * ResourcePacks::getImage(std::string path, int *width, int *height, int *nrChannels) {
+    stbi_set_unpremultiply_on_load(true);
+    stbi_convert_iphone_png_to_rgb(true);
+    return (std::byte *) stbi_load(path.c_str(), width, height, nrChannels, 4);
 }
 
 } // namespace game
